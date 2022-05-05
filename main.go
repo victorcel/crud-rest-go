@@ -2,10 +2,12 @@ package main
 
 import (
 	"context"
+	"crud-rest-vozy/handlers"
 	"crud-rest-vozy/server"
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 	"log"
+	"net/http"
 	"os"
 )
 
@@ -32,5 +34,5 @@ func main() {
 }
 
 func BindRoutes(s server.Server, r *mux.Router) {
-
+	r.HandleFunc("/api/v1/signup", handlers.SignUpHandler(s)).Methods(http.MethodPost)
 }
