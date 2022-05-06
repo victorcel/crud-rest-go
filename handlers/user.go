@@ -5,6 +5,7 @@ import (
 	"crud-rest-vozy/repository"
 	"crud-rest-vozy/server"
 	"encoding/json"
+	"github.com/go-playground/validator/v10"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"
@@ -24,10 +25,19 @@ type SignUpResponse struct {
 	Email string `json:"email"`
 }
 
-func SignUpHandler(s server.Server) http.HandlerFunc {
+type ResponseError struct {
+	Message string
+}
+
+func SignUpHandler(s server.Server, validate *validator.Validate) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+
+		w.Header().Set("Content-Type", "application/json")
+
 		var request = SignUpLoginRequest{}
+
 		err := json.NewDecoder(r.Body).Decode(&request)
+
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
@@ -45,13 +55,40 @@ func SignUpHandler(s server.Server) http.HandlerFunc {
 			Password: string(hashPassword),
 		}
 
-		repositoryInsertUser, err := repository.InsertUser(r.Context(), &user)
+		err = validate.Struct(user)
 		if err != nil {
-			http.Error(w, "Validation "+err.Error(), http.StatusInternalServerError)
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(ResponseError{
+				Message: err.Error(),
+			})
 			return
 		}
 
-		w.Header().Set("Content-Type", "application/json")
+		email, errorEmail := repository.GetUserByEmail(r.Context(), user.Email)
+		if errorEmail != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(ResponseError{
+				Message: errorEmail.Error(),
+			})
+
+			return
+		}
+
+		if (email != models.User{}) {
+			w.WriteHeader(http.StatusBadRequest)
+			json.NewEncoder(w).Encode(ResponseError{
+				Message: "Email ya existe",
+			})
+
+			return
+		}
+
+		repositoryInsertUser, err := repository.InsertUser(r.Context(), &user)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
 		json.NewEncoder(w).Encode(SignUpResponse{
 			ID:    repositoryInsertUser,
 			Name:  user.Name,

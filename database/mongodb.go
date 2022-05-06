@@ -51,7 +51,7 @@ func (repository *MongoDbRepository) InsertUser(ctx context.Context, user *model
 	return fmt.Sprintf("%v", result.InsertedID.(primitive.ObjectID).Hex()), err
 }
 
-func (repository *MongoDbRepository) GetUser(ctx context.Context, id string) (models.User, error) {
+func (repository *MongoDbRepository) GetUserByID(ctx context.Context, id string) (models.User, error) {
 
 	var user models.User
 
@@ -62,6 +62,18 @@ func (repository *MongoDbRepository) GetUser(ctx context.Context, id string) (mo
 	}
 
 	err = userCollection.FindOne(ctx, bson.D{{"_id", objectId}}).Decode(&user)
+	if err != nil {
+		return models.User{}, err
+	}
+
+	return user, nil
+}
+
+func (repository *MongoDbRepository) GetUserByEmail(ctx context.Context, email string) (models.User, error) {
+
+	var user models.User
+
+	err := userCollection.FindOne(ctx, bson.D{{"email", email}}).Decode(&user)
 	if err != nil {
 		return models.User{}, err
 	}

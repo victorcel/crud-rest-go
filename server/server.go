@@ -1,7 +1,6 @@
 package server
 
 import (
-	"context"
 	"crud-rest-vozy/database"
 	"crud-rest-vozy/repository"
 	"errors"
@@ -29,10 +28,7 @@ func (b *Broker) Config() *Config {
 	return b.config
 }
 
-func NewServer(
-	ctx context.Context,
-	config *Config,
-) (*Broker, error) {
+func NewServer(config *Config) (*Broker, error) {
 	if config.Port == "" {
 		return nil, errors.New("port is required")
 	}

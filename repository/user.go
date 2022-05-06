@@ -8,7 +8,8 @@ import (
 
 type User interface {
 	InsertUser(ctx context.Context, user *models.User) (string, error)
-	GetUser(ctx context.Context, id string) (models.User, error)
+	GetUserByID(ctx context.Context, id string) (models.User, error)
+	GetUserByEmail(ctx context.Context, email string) (models.User, error)
 	GetUsers(ctx context.Context) ([]models.User, error)
 	UpdateUser(ctx context.Context, id primitive.ObjectID, name string) error
 	DeleteUser(ctx context.Context, id primitive.ObjectID) error
@@ -25,8 +26,12 @@ func InsertUser(ctx context.Context, user *models.User) (string, error) {
 	return implementationUser.InsertUser(ctx, user)
 }
 
-func GetUser(ctx context.Context, id string) (models.User, error) {
-	return implementationUser.GetUser(ctx, id)
+func GetUserByID(ctx context.Context, id string) (models.User, error) {
+	return implementationUser.GetUserByID(ctx, id)
+}
+
+func GetUserByEmail(ctx context.Context, email string) (models.User, error) {
+	return implementationUser.GetUserByEmail(ctx, email)
 }
 
 func GetUsers(ctx context.Context) ([]models.User, error) {
