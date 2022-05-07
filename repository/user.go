@@ -20,7 +20,7 @@ type UserRepository interface {
 
 var implementationUser UserRepository
 
-func SetRepository(repository UserRepository) {
+func SetUserRepository(repository UserRepository) {
 	implementationUser = repository
 }
 
