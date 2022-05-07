@@ -1,27 +1,28 @@
 package main
 
 import (
-	"context"
+	"crud-rest-vozy/handlers"
 	"crud-rest-vozy/server"
+	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 	"log"
+	"net/http"
 	"os"
 )
+
+var validate *validator.Validate
 
 func main() {
 	err := godotenv.Load(".env")
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
-	PORT := os.Getenv("PORT")
-	JWT_SECRET := os.Getenv("JWT_SECRET")
-	DATABASE_URL := os.Getenv("DATABASE_URL")
 
-	s, err := server.NewServer(context.Background(), &server.Config{
-		Port:        PORT,
-		JWTSecret:   JWT_SECRET,
-		DatabaseUrl: DATABASE_URL,
+	s, err := server.NewServer(&server.Config{
+		Port:        os.Getenv("PORT"),
+		DatabaseUrl: os.Getenv("DATABASE_URL"),
+		JWTSecret:   os.Getenv("JWT_SECRET"),
 	})
 
 	if err != nil {
@@ -32,5 +33,6 @@ func main() {
 }
 
 func BindRoutes(s server.Server, r *mux.Router) {
-
+	validate = validator.New()
+	r.HandleFunc("/api/v1/signup", handlers.SignUpHandler(s, validate)).Methods(http.MethodPost)
 }

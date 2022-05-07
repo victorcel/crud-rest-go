@@ -1,9 +1,8 @@
 package server
 
 import (
-	"context"
 	"crud-rest-vozy/database"
-	"crud-rest-vozy/models"
+	"crud-rest-vozy/repository"
 	"errors"
 	"github.com/gorilla/mux"
 	"log"
@@ -29,10 +28,7 @@ func (b *Broker) Config() *Config {
 	return b.config
 }
 
-func NewServer(
-	ctx context.Context,
-	config *Config,
-) (*Broker, error) {
+func NewServer(config *Config) (*Broker, error) {
 	if config.Port == "" {
 		return nil, errors.New("port is required")
 	}
@@ -57,20 +53,10 @@ func (b *Broker) Start(binder func(s Server, r *mux.Router)) {
 	repo, err := database.NewMongoDbRepository(b.config.DatabaseUrl)
 
 	if err != nil {
-		log.Fatal(err)
-	}
-	data, err := repo.InsertUser(context.TODO(), &models.User{
-		Name:     "Victor",
-		Email:    "cel",
-		Password: "324324324",
-	})
-
-	if err != nil {
-		log.Fatal("InsertUser: ", err)
+		log.Fatal("Error server mongodb", err)
 	}
 
-	log.Print(data)
-	//repository.SetRepository(repo)
+	repository.SetRepository(repo)
 
 	log.Println("Starting server on port", b.Config().Port)
 
