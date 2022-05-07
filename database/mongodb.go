@@ -11,9 +11,7 @@ import (
 	"log"
 )
 
-var (
-	userCollection *mongo.Collection
-)
+const CollectionName = "users"
 
 type MongoDbRepository struct {
 	db *mongo.Database
@@ -33,7 +31,6 @@ func NewMongoDbRepository(url string) (*MongoDbRepository, error) {
 	}
 
 	db := client.Database("rest-vozy")
-	userCollection = db.Collection("users")
 	return &MongoDbRepository{db}, nil
 }
 
@@ -42,7 +39,7 @@ func (repository *MongoDbRepository) Close() error {
 }
 
 func (repository *MongoDbRepository) InsertUser(ctx context.Context, user *models.User) (string, error) {
-	result, err := userCollection.InsertOne(ctx, user)
+	result, err := repository.db.Collection(CollectionName).InsertOne(ctx, user)
 
 	if err != nil {
 		return "", err
@@ -61,7 +58,7 @@ func (repository *MongoDbRepository) GetUserByID(ctx context.Context, id string)
 		return user, err
 	}
 
-	err = userCollection.FindOne(ctx, bson.D{{"_id", objectId}}).Decode(&user)
+	err = repository.db.Collection(CollectionName).FindOne(ctx, bson.D{{"_id", objectId}}).Decode(&user)
 	if err != nil {
 		return models.User{}, err
 	}
@@ -73,7 +70,7 @@ func (repository *MongoDbRepository) GetUserByEmail(ctx context.Context, email s
 
 	var user models.User
 
-	err := userCollection.FindOne(ctx, bson.D{{"email", email}}).Decode(&user)
+	err := repository.db.Collection(CollectionName).FindOne(ctx, bson.D{{"email", email}}).Decode(&user)
 	if err != nil {
 		return models.User{}, err
 	}
@@ -85,7 +82,7 @@ func (repository *MongoDbRepository) GetUsers(ctx context.Context) ([]models.Use
 	var user models.User
 	var users []models.User
 
-	cursor, err := userCollection.Find(ctx, bson.D{})
+	cursor, err := repository.db.Collection(CollectionName).Find(ctx, bson.D{})
 	defer cursor.Close(ctx)
 	if err != nil {
 		return users, err
@@ -102,17 +99,20 @@ func (repository *MongoDbRepository) GetUsers(ctx context.Context) ([]models.Use
 	return users, nil
 }
 
-func (repository *MongoDbRepository) UpdateUser(ctx context.Context, id primitive.ObjectID, name string) error {
+func (repository *MongoDbRepository) UpdateUser(ctx context.Context, id primitive.ObjectID, name string) (*mongo.UpdateResult, error) {
 	filter := bson.D{{"_id", id}}
 	update := bson.D{{"$set", bson.D{{"name", name}}}}
-	_, err := userCollection.UpdateOne(ctx, filter, update)
-	return err
+	updateOne, err := repository.db.Collection(CollectionName).UpdateOne(ctx, filter, update)
+	if err != nil {
+		return nil, err
+	}
+	return updateOne, nil
 }
 
-func (repository *MongoDbRepository) DeleteUser(ctx context.Context, id primitive.ObjectID) error {
-	_, err := userCollection.DeleteOne(ctx, bson.D{{"_id", id}})
+func (repository *MongoDbRepository) DeleteUser(ctx context.Context, id primitive.ObjectID) (*mongo.DeleteResult, error) {
+	deleteOne, err := repository.db.Collection(CollectionName).DeleteOne(ctx, bson.D{{"_id", id}})
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	return deleteOne, nil
 }
