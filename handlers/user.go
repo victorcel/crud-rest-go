@@ -3,7 +3,7 @@ package handlers
 import (
 	"crud-rest-vozy/models"
 	"crud-rest-vozy/repository"
-	"crud-rest-vozy/server"
+	"crud-rest-vozy/useCases/user"
 	"encoding/json"
 	"github.com/go-playground/validator/v10"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -29,7 +29,7 @@ type ResponseError struct {
 	Message string
 }
 
-func SignUpHandler(s server.Server, validate *validator.Validate) http.HandlerFunc {
+func SignUpHandler(validate *validator.Validate) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		w.Header().Set("Content-Type", "application/json")
@@ -95,4 +95,12 @@ func SignUpHandler(s server.Server, validate *validator.Validate) http.HandlerFu
 		})
 
 	}
+}
+
+func GetUserByID() http.HandlerFunc {
+	return user.GetUserByID()
+}
+
+func GetUsers() http.HandlerFunc {
+	return user.GetUsers()
 }

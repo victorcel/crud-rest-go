@@ -17,6 +17,12 @@ type MongoDbRepository struct {
 	db *mongo.Database
 }
 
+type UserWithoutPassword struct {
+	Id    primitive.ObjectID `bson:"_id" json:"id"`
+	Name  string             `json:"name"`
+	Email string             `json:"email"`
+}
+
 func NewMongoDbRepository(url string) (*MongoDbRepository, error) {
 
 	clientOptions := options.Client().ApplyURI(url)
@@ -78,9 +84,9 @@ func (repository *MongoDbRepository) GetUserByEmail(ctx context.Context, email s
 	return user, nil
 }
 
-func (repository *MongoDbRepository) GetUsers(ctx context.Context) ([]models.User, error) {
-	var user models.User
-	var users []models.User
+func (repository *MongoDbRepository) GetUsers(ctx context.Context) ([]UserWithoutPassword, error) {
+	var user UserWithoutPassword
+	var users []UserWithoutPassword
 
 	cursor, err := repository.db.Collection(CollectionName).Find(ctx, bson.D{})
 	defer cursor.Close(ctx)
