@@ -65,12 +65,11 @@ func SignUpHandler(s server.Server, validate *validator.Validate) http.HandlerFu
 		}
 
 		email, errorEmail := repository.GetUserByEmail(r.Context(), user.Email)
-		if errorEmail != nil {
+		if errorEmail != nil && errorEmail.Error() != "mongo: no documents in result" {
 			w.WriteHeader(http.StatusBadRequest)
 			json.NewEncoder(w).Encode(ResponseError{
 				Message: errorEmail.Error(),
 			})
-
 			return
 		}
 
