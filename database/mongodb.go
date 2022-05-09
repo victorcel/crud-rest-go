@@ -108,10 +108,16 @@ func (repository *MongoDbRepository) GetUsers(ctx context.Context) ([]UserWithou
 	return users, nil
 }
 
-func (repository *MongoDbRepository) UpdateUser(ctx context.Context, id primitive.ObjectID, name string) (
+func (repository *MongoDbRepository) UpdateUser(ctx context.Context, id string, name string) (
 	*mongo.UpdateResult, error,
 ) {
-	filter := bson.D{{"_id", id}}
+	objectId, err := primitive.ObjectIDFromHex(id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	filter := bson.D{{"_id", objectId}}
 	update := bson.D{{"$set", bson.D{{"name", name}}}}
 	updateOne, err := repository.db.Collection(CollectionNameUser).UpdateOne(ctx, filter, update)
 	if err != nil {
@@ -120,10 +126,16 @@ func (repository *MongoDbRepository) UpdateUser(ctx context.Context, id primitiv
 	return updateOne, nil
 }
 
-func (repository *MongoDbRepository) DeleteUser(ctx context.Context, id primitive.ObjectID) (
+func (repository *MongoDbRepository) DeleteUser(ctx context.Context, id string) (
 	*mongo.DeleteResult, error,
 ) {
-	deleteOne, err := repository.db.Collection(CollectionNameUser).DeleteOne(ctx, bson.D{{"_id", id}})
+	objectId, err := primitive.ObjectIDFromHex(id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	deleteOne, err := repository.db.Collection(CollectionNameUser).DeleteOne(ctx, bson.D{{"_id", objectId}})
 	if err != nil {
 		return nil, err
 	}

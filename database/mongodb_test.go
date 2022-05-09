@@ -333,7 +333,7 @@ func TestMongoDbRepository_UpdateUser(t *testing.T) {
 	}
 	type args struct {
 		ctx  context.Context
-		id   primitive.ObjectID
+		id   string
 		name string
 	}
 	tests := []struct {
@@ -350,7 +350,7 @@ func TestMongoDbRepository_UpdateUser(t *testing.T) {
 			},
 			args: args{
 				ctx:  context.Background(),
-				id:   user.ID,
+				id:   user.ID.Hex(),
 				name: "elias",
 			},
 			want: &mongo.UpdateResult{
@@ -368,7 +368,7 @@ func TestMongoDbRepository_UpdateUser(t *testing.T) {
 			},
 			args: args{
 				ctx:  context.Background(),
-				id:   primitive.NewObjectID(),
+				id:   primitive.NewObjectID().Hex(),
 				name: "elias",
 			},
 			want: &mongo.UpdateResult{
@@ -414,7 +414,7 @@ func TestMongoDbRepository_DeleteUser(t *testing.T) {
 	}
 	type args struct {
 		ctx context.Context
-		id  primitive.ObjectID
+		id  string
 	}
 	tests := []struct {
 		name    string
@@ -428,7 +428,7 @@ func TestMongoDbRepository_DeleteUser(t *testing.T) {
 			fields: fields{db: setup()},
 			args: args{
 				ctx: context.Background(),
-				id:  user1.ID,
+				id:  user1.ID.Hex(),
 			},
 			want: &mongo.DeleteResult{
 				DeletedCount: 1,
@@ -440,7 +440,7 @@ func TestMongoDbRepository_DeleteUser(t *testing.T) {
 			fields: fields{db: setup()},
 			args: args{
 				ctx: context.Background(),
-				id:  primitive.NewObjectID(),
+				id:  primitive.NewObjectID().Hex(),
 			},
 			want: &mongo.DeleteResult{
 				DeletedCount: 0,
