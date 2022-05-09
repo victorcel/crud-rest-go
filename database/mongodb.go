@@ -11,10 +11,19 @@ import (
 	"log"
 )
 
-const CollectionName = "users"
+const (
+	CollectionNameUser = "users"
+	CollectionNamePost = "posts"
+)
 
 type MongoDbRepository struct {
 	db *mongo.Database
+}
+
+type UserWithoutPassword struct {
+	Id    primitive.ObjectID `bson:"_id" json:"id"`
+	Name  string             `json:"name"`
+	Email string             `json:"email"`
 }
 
 func NewMongoDbRepository(url string) (*MongoDbRepository, error) {
@@ -39,7 +48,7 @@ func (repository *MongoDbRepository) Close() error {
 }
 
 func (repository *MongoDbRepository) InsertUser(ctx context.Context, user *models.User) (string, error) {
-	result, err := repository.db.Collection(CollectionName).InsertOne(ctx, user)
+	result, err := repository.db.Collection(CollectionNameUser).InsertOne(ctx, user)
 
 	if err != nil {
 		return "", err
@@ -58,7 +67,7 @@ func (repository *MongoDbRepository) GetUserByID(ctx context.Context, id string)
 		return user, err
 	}
 
-	err = repository.db.Collection(CollectionName).FindOne(ctx, bson.D{{"_id", objectId}}).Decode(&user)
+	err = repository.db.Collection(CollectionNameUser).FindOne(ctx, bson.D{{"_id", objectId}}).Decode(&user)
 	if err != nil {
 		return models.User{}, err
 	}
@@ -70,7 +79,7 @@ func (repository *MongoDbRepository) GetUserByEmail(ctx context.Context, email s
 
 	var user models.User
 
-	err := repository.db.Collection(CollectionName).FindOne(ctx, bson.D{{"email", email}}).Decode(&user)
+	err := repository.db.Collection(CollectionNameUser).FindOne(ctx, bson.D{{"email", email}}).Decode(&user)
 	if err != nil {
 		return models.User{}, err
 	}
@@ -78,11 +87,11 @@ func (repository *MongoDbRepository) GetUserByEmail(ctx context.Context, email s
 	return user, nil
 }
 
-func (repository *MongoDbRepository) GetUsers(ctx context.Context) ([]models.User, error) {
-	var user models.User
-	var users []models.User
+func (repository *MongoDbRepository) GetUsers(ctx context.Context) ([]UserWithoutPassword, error) {
+	var user UserWithoutPassword
+	var users []UserWithoutPassword
 
-	cursor, err := repository.db.Collection(CollectionName).Find(ctx, bson.D{})
+	cursor, err := repository.db.Collection(CollectionNameUser).Find(ctx, bson.D{})
 	defer cursor.Close(ctx)
 	if err != nil {
 		return users, err
@@ -99,20 +108,104 @@ func (repository *MongoDbRepository) GetUsers(ctx context.Context) ([]models.Use
 	return users, nil
 }
 
-func (repository *MongoDbRepository) UpdateUser(ctx context.Context, id primitive.ObjectID, name string) (*mongo.UpdateResult, error) {
-	filter := bson.D{{"_id", id}}
+func (repository *MongoDbRepository) UpdateUser(ctx context.Context, id string, name string) (
+	*mongo.UpdateResult, error,
+) {
+	objectId, err := primitive.ObjectIDFromHex(id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	filter := bson.D{{"_id", objectId}}
 	update := bson.D{{"$set", bson.D{{"name", name}}}}
-	updateOne, err := repository.db.Collection(CollectionName).UpdateOne(ctx, filter, update)
+	updateOne, err := repository.db.Collection(CollectionNameUser).UpdateOne(ctx, filter, update)
 	if err != nil {
 		return nil, err
 	}
 	return updateOne, nil
 }
 
-func (repository *MongoDbRepository) DeleteUser(ctx context.Context, id primitive.ObjectID) (*mongo.DeleteResult, error) {
-	deleteOne, err := repository.db.Collection(CollectionName).DeleteOne(ctx, bson.D{{"_id", id}})
+func (repository *MongoDbRepository) DeleteUser(ctx context.Context, id string) (
+	*mongo.DeleteResult, error,
+) {
+	objectId, err := primitive.ObjectIDFromHex(id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	deleteOne, err := repository.db.Collection(CollectionNameUser).DeleteOne(ctx, bson.D{{"_id", objectId}})
 	if err != nil {
 		return nil, err
 	}
 	return deleteOne, nil
+}
+
+func (repository *MongoDbRepository) InsertPost(ctx context.Context, post *models.Post) (string, error) {
+	result, err := repository.db.Collection(CollectionNamePost).InsertOne(ctx, post)
+
+	if err != nil {
+		return "", err
+	}
+
+	return fmt.Sprintf("%v", result.InsertedID.(primitive.ObjectID).Hex()), err
+}
+
+func (repository *MongoDbRepository) GetPostByID(ctx context.Context, id string) (*models.Post, error) {
+	var post models.Post
+
+	objectId, err := primitive.ObjectIDFromHex(id)
+
+	if err != nil {
+		return &post, err
+	}
+
+	err = repository.db.Collection(CollectionNamePost).FindOne(ctx, bson.D{{"_id", objectId}}).Decode(&post)
+	if err != nil {
+		return &models.Post{}, err
+	}
+
+	return &post, nil
+}
+
+func (repository *MongoDbRepository) DeletePost(ctx context.Context, id primitive.ObjectID) (
+	*mongo.DeleteResult, error,
+) {
+	deleteOne, err := repository.db.Collection(CollectionNamePost).DeleteOne(ctx, bson.D{{"_id", id}})
+	if err != nil {
+		return nil, err
+	}
+	return deleteOne, nil
+}
+
+func (repository *MongoDbRepository) UpdatePost(ctx context.Context, post *models.Post) (*mongo.UpdateResult, error) {
+	filter := bson.D{{"_id", post.Id}}
+	update := bson.D{{"$set", bson.D{{"post_content", post.PostContent}}}}
+	updateOne, err := repository.db.Collection(CollectionNamePost).UpdateOne(ctx, filter, update)
+	if err != nil {
+		return nil, err
+	}
+	return updateOne, nil
+}
+
+func (repository *MongoDbRepository) ListPost(ctx context.Context) (*[]models.Post, error) {
+	var post models.Post
+	var posts []models.Post
+
+	cursor, err := repository.db.Collection(CollectionNamePost).Find(ctx, bson.D{})
+	defer cursor.Close(ctx)
+	if err != nil {
+		return &posts, err
+	}
+
+	for cursor.Next(ctx) {
+		err := cursor.Decode(&post)
+		if err != nil {
+			return &posts, err
+		}
+		posts = append(posts, post)
+	}
+
+	return &posts, nil
 }

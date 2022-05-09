@@ -34,5 +34,9 @@ func main() {
 
 func BindRoutes(s server.Server, r *mux.Router) {
 	validate = validator.New()
-	r.HandleFunc("/api/v1/signup", handlers.SignUpHandler(s, validate)).Methods(http.MethodPost)
+	r.HandleFunc("/api/v1/signup", handlers.InsertUser(validate)).Methods(http.MethodPost)
+	r.HandleFunc("/api/v1/user", handlers.GetUsers()).Methods(http.MethodGet)
+	r.HandleFunc("/api/v1/user/{id}", handlers.GetUserByID()).Methods(http.MethodGet)
+	r.HandleFunc("/api/v1/user", handlers.UpdateUser()).Methods(http.MethodPut)
+	r.HandleFunc("/api/v1/user", handlers.DeleteUser()).Methods(http.MethodDelete)
 }

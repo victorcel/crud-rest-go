@@ -56,7 +56,8 @@ func (b *Broker) Start(binder func(s Server, r *mux.Router)) {
 		log.Fatal("Error server mongodb", err)
 	}
 
-	repository.SetRepository(repo)
+	repository.SetUserRepository(repo)
+	repository.SetPostRepository(repo)
 
 	log.Println("Starting server on port", b.Config().Port)
 

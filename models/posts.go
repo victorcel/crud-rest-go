@@ -1,10 +1,13 @@
 package models
 
-import "time"
+import (
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"time"
+)
 
 type Post struct {
-	Id          string    `bson:"id"`
-	PostContent string    `bson:"postContent"`
-	CreatedAt   time.Time `bson:"createdAt"`
-	UserId      string    `bson:"userId"`
+	Id          primitive.ObjectID `bson:"_id" validate:"required"`
+	PostContent string             `bson:"post_content" validate:"required"`
+	CreatedAt   time.Time          `bson:"createdAt" validate:"required"`
+	UserId      string             `bson:"userId" validate:"required"`
 }
