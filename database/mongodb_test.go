@@ -2,10 +2,10 @@ package database
 
 import (
 	"context"
-	"crud-rest-vozy/models"
 	"fmt"
 	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
+	"github.com/victorcel/crud-rest-vozy/models"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"

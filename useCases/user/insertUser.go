@@ -1,10 +1,10 @@
 package user
 
 import (
-	"crud-rest-vozy/models"
-	"crud-rest-vozy/repository"
 	"encoding/json"
 	"github.com/go-playground/validator/v10"
+	"github.com/victorcel/crud-rest-vozy/models"
+	"github.com/victorcel/crud-rest-vozy/repository"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
 	"net/http"

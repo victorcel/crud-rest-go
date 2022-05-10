@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"crud-rest-vozy/useCases/user"
 	"github.com/go-playground/validator/v10"
+	"github.com/victorcel/crud-rest-vozy/useCases/user"
 	"net/http"
 )
 

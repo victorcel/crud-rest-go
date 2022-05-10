@@ -2,8 +2,8 @@ package database
 
 import (
 	"context"
-	"crud-rest-vozy/models"
 	"fmt"
+	"github.com/victorcel/crud-rest-vozy/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"

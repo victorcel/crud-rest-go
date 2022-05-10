@@ -1,10 +1,10 @@
 package user
 
 import (
-	"crud-rest-vozy/repository"
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
+	"github.com/victorcel/crud-rest-vozy/repository"
 	"net/http"
 )
 

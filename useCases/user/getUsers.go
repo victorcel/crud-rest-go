@@ -1,8 +1,8 @@
 package user
 
 import (
-	"crud-rest-vozy/repository"
 	"encoding/json"
+	"github.com/victorcel/crud-rest-vozy/repository"
 	"net/http"
 )
 
