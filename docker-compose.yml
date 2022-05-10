@@ -1,15 +1,8 @@
 version: '3'
 
 services:
-  golang:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "5050:5050"
-    depends_on:
-      - mongodb
   mongodb:
+    container_name: "mongodb"
     image: mongo:5.0
     ports:
       - "27017:27017"
@@ -18,3 +11,14 @@ services:
     environment:
       - MONGO_INITDB_ROOT_USERNAME=vozy
       - MONGO_INITDB_ROOT_PASSWORD=1qsw23edfr4
+    # App Service
+  app:
+    # Configuration for building the docker image for the service
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5050:5050"
+    restart: unless-stopped
+    depends_on:
+      - mongodb
