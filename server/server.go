@@ -1,10 +1,10 @@
 package server
 
 import (
-	"crud-rest-vozy/database"
-	"crud-rest-vozy/repository"
 	"errors"
 	"github.com/gorilla/mux"
+	"github.com/victorcel/crud-rest-vozy/database"
+	"github.com/victorcel/crud-rest-vozy/repository"
 	"log"
 	"net/http"
 )

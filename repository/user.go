@@ -2,8 +2,8 @@ package repository
 
 import (
 	"context"
-	"crud-rest-vozy/database"
-	"crud-rest-vozy/models"
+	"github.com/victorcel/crud-rest-vozy/database"
+	"github.com/victorcel/crud-rest-vozy/models"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 

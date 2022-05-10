@@ -1,11 +1,11 @@
 package main
 
 import (
-	"crud-rest-vozy/handlers"
-	"crud-rest-vozy/server"
 	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
+	"github.com/victorcel/crud-rest-vozy/handlers"
+	"github.com/victorcel/crud-rest-vozy/server"
 	"log"
 	"net/http"
 	"os"

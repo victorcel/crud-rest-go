@@ -2,7 +2,7 @@ package repository
 
 import (
 	"context"
-	"crud-rest-vozy/models"
+	"github.com/victorcel/crud-rest-vozy/models"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
