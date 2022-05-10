@@ -7,7 +7,6 @@ services:
       dockerfile: Dockerfile
     ports:
       - "5050:5050"
-    command: go run main.go
     depends_on:
       - mongodb
   mongodb:
