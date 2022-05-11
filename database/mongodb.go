@@ -189,7 +189,7 @@ func (repository *MongoDbRepository) UpdatePost(ctx context.Context, post *model
 	return updateOne, nil
 }
 
-func (repository *MongoDbRepository) ListPost(ctx context.Context) (*[]models.Post, error) {
+func (repository *MongoDbRepository) GetPosts(ctx context.Context) (*[]models.Post, error) {
 	var post models.Post
 	var posts []models.Post
 
