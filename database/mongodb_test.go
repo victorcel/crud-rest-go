@@ -21,7 +21,7 @@ func setup() *mongo.Database {
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
-	clientOptions := options.Client().ApplyURI(os.Getenv("DATABASE_URL"))
+	clientOptions := options.Client().ApplyURI(os.Getenv("DATABASE_URL_TESTING"))
 	client, err := mongo.Connect(context.Background(), clientOptions)
 	if err != nil {
 		log.Fatal("Error connect mongodb", err)
@@ -727,36 +727,6 @@ func TestMongoDbRepository_UpdatePost(t *testing.T) {
 				return
 			}
 			assert.Equalf(t, tt.want, got, "UpdatePost(%v, %v)", tt.args.ctx, tt.args.post)
-		})
-	}
-}
-
-func TestMongoDbRepository_ListPost(t *testing.T) {
-	type fields struct {
-		db *mongo.Database
-	}
-	type args struct {
-		ctx context.Context
-	}
-	tests := []struct {
-		name    string
-		fields  fields
-		args    args
-		want    *[]models.Post
-		wantErr assert.ErrorAssertionFunc
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			repository := &MongoDbRepository{
-				db: tt.fields.db,
-			}
-			got, err := repository.ListPost(tt.args.ctx)
-			if !tt.wantErr(t, err, fmt.Sprintf("ListPost(%v)", tt.args.ctx)) {
-				return
-			}
-			assert.Equalf(t, tt.want, got, "ListPost(%v)", tt.args.ctx)
 		})
 	}
 }
