@@ -12,7 +12,7 @@ run:
 
 ## tests
 test:
-	@go test ./...
+	@go test ./... --cover
 ## docker compose
 up:
 	docker-compose up --build

@@ -12,7 +12,7 @@ type PostRepository interface {
 	GetPostByID(ctx context.Context, id string) (*models.Post, error)
 	DeletePost(ctx context.Context, id primitive.ObjectID) (*mongo.DeleteResult, error)
 	UpdatePost(ctx context.Context, post *models.Post) (*mongo.UpdateResult, error)
-	ListPost(ctx context.Context) (*[]models.Post, error)
+	GetPosts(ctx context.Context) (*[]models.Post, error)
 }
 
 var implementationPost PostRepository
@@ -37,6 +37,6 @@ func UpdatePost(ctx context.Context, post *models.Post) (*mongo.UpdateResult, er
 	return implementationPost.UpdatePost(ctx, post)
 }
 
-func ListPost(ctx context.Context) (*[]models.Post, error) {
-	return implementationPost.ListPost(ctx)
+func GetPosts(ctx context.Context) (*[]models.Post, error) {
+	return implementationPost.GetPosts(ctx)
 }

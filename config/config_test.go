@@ -1,8 +1,8 @@
 package config_test
 
 import (
-	"crud-rest-vozy/config"
 	"github.com/stretchr/testify/assert"
+	"github.com/victorcel/crud-rest-vozy/config"
 	"testing"
 )
 
